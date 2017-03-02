@@ -11,7 +11,7 @@ To install some prerequisite are needed
 **IMPORTANT NOTE:** To have OSA-LEtsencrypt working properly o n your box, it must satisfy the following pre-requisites.
   - OSA Installed and running
   - Direct access to internet (no proxies)
-  - prot 80 reachable from Internet
+  - 80 tcp port  reachable from Internet
 
 
 Installation process:
@@ -25,9 +25,12 @@ Installation process:
 		git clone https://github.com/zorglub42/OSA-Letsencrypt
   - Go to OSA-Letsencrypt clone folder
   
-		cd OSA
+		cd OSA-Letsencrypt
 
 Then run install.sh  
+
+		./install.sh
+		
 Congratulations! 
 You may now use OSA-Letsencrypt addon from OSA GUI
 
