@@ -70,5 +70,6 @@ chmod 777 $INSTALL_DIR/data
 cd $INSTALL_DIR/bin
 curl -s  https://dl.eff.org/certbot-auto -o certbot-auto
 chmod u+x certbot-auto
-./certbot-auto -n --os-packages-only
+sudo -H ./certbot-auto -n --os-packages-only
+sudo -H ./certbot-auto certificates
 
