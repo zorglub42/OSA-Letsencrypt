@@ -30,6 +30,9 @@ Installation process:
 Then run install.sh  
 
 		./install.sh
+Force letsencrypt tools installation and configuration
+
+		sudo -H ./certbot-auto certificates
 		
 Congratulations! 
 You may now use OSA-Letsencrypt addon from OSA GUI
