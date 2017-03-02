@@ -62,7 +62,7 @@ OSA_INSTALL_DIR=`grep '"runtimeApplianceConfigScript"' /etc/ApplianceManager/Set
 [ ! -d $OSA_INSTALL_DIR -o ! -d $OSA_INSTALL_DIR/ApplianceManager.php -o ! -d $OSA_INSTALL_DIR/ApplianceManager.php/addons -o ! -d $OSA_INSTALL_DIR/RunTimeAppliance  ] && echo "OSA Not found at $OSA_INSTALL_DIR" && exit 1
 
 configureCron
-changeProperty $INSTALL_DIR/web/include/Settings.php OSALEInstallDir "'"$INSTALL_DIR"'"
+changeProperty $INSTALL_DIR/web/include/Settings.php OSALEInstallDir '"'$INSTALL_DIR'";'
 cat >/etc/sudoers.d/OSA-Letsencrypt <<EOF
 #OSA-Letsencrypt addon
 Defaults:www-data    !requiretty

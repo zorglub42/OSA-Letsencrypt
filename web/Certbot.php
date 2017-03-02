@@ -20,7 +20,6 @@
  # History     :
  # 1.0.0 - 2017-03-01 : Release of the file
 */
-require_once 'include/Settings.php';
 require_once 'include/DataModel.php';
 
 
@@ -39,6 +38,7 @@ class Certbot{
 	 * @return OSALEConfig config definition
 	 */
 	function getConf( $node){
+		include 'include/Settings.php';
 
 		if (file_exists($OSALEInstallDir . "/data/$node")){
 			$content=file_get_contents($OSALEInstallDir . "/data/$node");
@@ -81,6 +81,7 @@ class Certbot{
 	 * @return OSALEConfig config definition
 	 */
 	function createConf( $node, $contact, $domains){
+		include 'include/Settings.php';
 
 		if (file_exists($OSALEInstallDir . "/data/$node")){
 			throw new RestException(409,"Configuration already exists");
@@ -128,6 +129,7 @@ class Certbot{
 	 * @return OSALEConfig config definition
 	 */
 	function deleteConf( $node){
+		include 'include/Settings.php';
 
 		$rc=$this->getConf($node);
 
