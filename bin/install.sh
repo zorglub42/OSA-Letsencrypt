@@ -63,6 +63,18 @@ OSA_INSTALL_DIR=`grep '"runtimeApplianceConfigScript"' /etc/ApplianceManager/Set
 
 configureCron
 changeProperty $INSTALL_DIR/web/include/Settings.php OSALEInstallDir "'"$INSTALL_DIR"'"
+cat >/etc/sudoers.d/OSA-Letsencrypt <<EOF
+#OSA-Letsencrypt addon
+Defaults:www-data    !requiretty
+Cmnd_Alias      OSA_LE_GEN_CERTS_CMD=$INSTALL_DIR/bin/generateCerts.sh
+Cmnd_Alias      OSA_LE_REVOKE_CERTS_CMD=$INSTALL_DIR/bin/revokeCerts.sh
+User_Alias      OSA_LE_USERS=www-data  OSA_LE_USERS       ALL = NOPASSWD: OSA_LE_GEN_CERTS_CMD, OSA_LE_REVOKE_CERTS_CMD
+#OSA-Letsencrypt addon
+EOF
+
+
+
+
 [ -L $OSA_INSTALL_DIR/ApplianceManager.php/addons/letsencrypt ] && rm $OSA_INSTALL_DIR/ApplianceManager.php/addons/letsencrypt
 ln -s $INSTALL_DIR/web $OSA_INSTALL_DIR/ApplianceManager.php/addons/letsencrypt
 chmod 777 $INSTALL_DIR/data
