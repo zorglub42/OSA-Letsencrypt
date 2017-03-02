@@ -23,9 +23,9 @@ Installation process:
   - clone git repo
 
 		git clone https://github.com/zorglub42/OSA-Letsencrypt
-  - Go to OSA-Letsencrypt clone folder
+  - Go to OSA-Letsencrypt/bin folder
   
-		cd OSA-Letsencrypt
+		cd OSA-Letsencrypt/bin
 
 Then run install.sh  
 
