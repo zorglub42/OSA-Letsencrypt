@@ -48,14 +48,20 @@ function enableDisableNode(){
 
 function getConflictingNodes(){
 	
+	[ -f listening-ok ] && rm listening-ok
  	curl -s -k --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"  "$OSA_LOCAL_SERVER/ApplianceManager/nodes/?order=nodeName&nodeNameFilter=&nodeDescriptionFilter=&localIPFilter=&portFilter=80&serverFQDNFilter="|sed 's/\\n/\n/g'|(
 		NODE_NAME="";
+		IP="";
 		MATCH=0
 		while read -r l ; do
 			echo $l | grep "nodeName">/dev/null
 			if [ $? -eq 0 ] ; then
 				NODE_NAME=`echo $l| awk -F ":" '{print $2}'|awk -F '"' '{print $2}'`
 				MATCH=0
+			fi
+			echo $l | grep "localIP">/dev/null
+			if [ $? -eq 0 ] ; then
+				IP=`echo $l| awk -F ":" '{print $2}'|awk -F '"' '{print $2}'`
 			fi
 			echo $l | grep "serverFQDN">/dev/null
 			if [ $? -eq 0 ] ; then
@@ -85,8 +91,12 @@ function getConflictingNodes(){
 			if [ $? -eq 0 ] ; then
 				if [ $PUBLISHED -eq 1 -a $MATCH -eq 1 ] ; then
 					echo $NODE_NAME
+					if [ $IP == '*' ] ; then
+						touch 'listening-ok'
+					fi
 				fi
 				NODE_NAME="";
+				IP="";
 				MATCH=0
 			fi
 		done
@@ -145,6 +155,8 @@ cd `dirname $0`
 	done
 	ROOT_DOMAIN=`echo "$DOMAINS"|awk '{print $1}'`
 
+getConflictingNodes
+exit 1
 	#Find nodes using same FQDN and port 80
 	CONFLICTING_NODES=`getConflictingNodes`
 	#Stop those node while letsencrypt try domain validation
@@ -154,8 +166,10 @@ cd `dirname $0`
 	done
 
 	mkdir -p /var/www/le-domain-validation
+	LISTEN_DIRECTIVE=""										#Assume that there a Listening VHost on *80
+	[ ! f listening-ok ] && LISTEN_DIRECTIVE="Listen *:80" 	#In fact not, we didn't find a node listening on port 80 and * in getConflictingNodes
 	cat > $APACHE_SITES_ENABLED_DIR/le-domain-validation.conf <<EOF
-
+$LISTEN_DIRECTIVE
 <VirtualHost *:80>
         # This virtualhost is created for letsencrypt domain validation process. If you see this file, somethings is probably gone wrong......
         ServerName $NODE_FQDN
