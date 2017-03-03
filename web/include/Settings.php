@@ -20,4 +20,4 @@
  # History     :
  # 1.0.0 - 2017-03-01 : Release of the file
 */
-$OSALEInstallDir='/home/jmjb0521/Dev/workspace/OSA-Letsencrypt'
+$OSALEInstallDir="/home/jmjb0521/Dev/workspace/OSA-Letsencrypt";

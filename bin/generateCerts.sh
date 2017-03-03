@@ -1,13 +1,25 @@
 #!/bin/bash
-
-
-# Configuration section #############################################################################
-OSA_LOCAL_SERVER="http://127.0.0.1:81"
-OSA_LOCAL_USER=""
-OSA_LOCAL_PWD=""
-# End of Configuration section #############################################################################
-
-
+##--------------------------------------------------------
+ # Module Name : OSA-Letsencrypt
+ # Version : 1.0.0
+ #
+ #
+ # Copyright (c) 2017 Zorglub42
+ # This software is distributed under the Apache 2 license
+ # <http://www.apache.org/licenses/LICENSE-2.0.html>
+ #
+ #--------------------------------------------------------
+ # File Name   : bin/generateCerts.sh
+ #
+ # Created     : 2017-03
+ # Authors     : zorglub42 <contact(at)zorglub42.fr>
+ #
+ # Description :
+ #      generate and renew certificates for a node
+ #--------------------------------------------------------
+ # History     :
+ # 1.0.0 - 2017-03-01 : Release of the file
+##
 function usage(){
 	echo $0 node-name
 	exit 1
@@ -36,7 +48,6 @@ function enableDisableNode(){
 
 function getConflictingNodes(){
 	
- 	
  	curl -s -k --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"  "$OSA_LOCAL_SERVER/ApplianceManager/nodes/?order=nodeName&nodeNameFilter=&nodeDescriptionFilter=&localIPFilter=&portFilter=80&serverFQDNFilter="|sed 's/\\n/\n/g'|(
 		NODE_NAME="";
 		MATCH=0
@@ -49,7 +60,7 @@ function getConflictingNodes(){
 			echo $l | grep "serverFQDN">/dev/null
 			if [ $? -eq 0 ] ; then
 				for d in $DOMAINS ; do
-					echo $l | grep $d >/dev/null
+					echo $l | tr '[:upper:]' '[:lower:]'| grep $d >/dev/null
 					if [ $? -eq 0 ] ; then
 						MATCH=1
 					fi
@@ -58,7 +69,7 @@ function getConflictingNodes(){
 			echo $l| grep "ServerAlias" >/dev/null
 			if [ $? -eq 0 ] ; then
 				for d in $DOMAINS ; do
-					echo $l | egrep "ServerAlias[ |\t]*$d[\n| |\t]*" >/dev/null
+					echo $l | tr '[:upper:]' '[:lower:]'| egrep "serveralias[ |\t]*$d[\n| |\t]*" >/dev/null
 					if [ $? -eq 0 ] ; then
 						MATCH=1
 					fi
@@ -90,12 +101,13 @@ function checkRestring(){
 	fi
 }
 
+cd `dirname $0`
+. ./conf.sh
+
 (
 	[ "$1" == "" ] && usage
-	cd `dirname $0`
 	[ ! -x ../data/$1 ] && echo "Configuration for node $1 does not exists.... exiting" && exit 2
 	. ../data/$1
-	. ./conf.sh
 
 	if [ "$2" == "renew" ] ; then
 		LE_ACTION="renew"
@@ -127,23 +139,23 @@ function checkRestring(){
 	DOMAINS=""
 	for p in $LE_CERT_DOMAIN ; do
 		if [ "$p" != "-d" ] ; then
-			DOMAINS="$DOMAINS $p"
+			lowerDomain=`echo $p| tr '[:upper:]' '[:lower:]'`
+			DOMAINS="$DOMAINS $lowerDomain"
 		fi
 	done
 	ROOT_DOMAIN=`echo "$DOMAINS"|awk '{print $1}'`
-	
-	
+
 	#Find nodes using same FQDN and port 80
 	CONFLICTING_NODES=`getConflictingNodes`
-
 	#Stop those node while letsencrypt try domain validation
 	for node in $CONFLICTING_NODES ; do
 		enableDisableNode $node 0
-		sleep 0.1
+		sleep 0.5
 	done
 
 	mkdir -p /var/www/le-domain-validation
 	cat > $APACHE_SITES_ENABLED_DIR/le-domain-validation.conf <<EOF
+
 <VirtualHost *:80>
         # This virtualhost is created for letsencrypt domain validation process. If you see this file, somethings is probably gone wrong......
         ServerName $NODE_FQDN
@@ -171,16 +183,17 @@ EOF
 	SUCCESS=0
 	
 	if [ "$LE_ACTION" == "create" ] ; then
-		./certbot-auto certonly $CERTBOT_OPTS -n --webroot -w /var/www/le-domain-validation $LE_CERT_DOMAIN --agree-tos  --email $LE_MAIL  &> $$.log 
+		./certbot-auto certonly $CERTBOT_OPTS -n --webroot -w /var/www/le-domain-validation $LE_CERT_DOMAIN --agree-tos  --email $LE_MAIL 2>&1 |tee -a $$.log 
 	elif [ "$LE_ACTION" == "renew" ] ; then
-		./certbot-auto renew $CERTBOT_OPTS -n --cert-name $ROOT_DOMAIN &>$$.log
+		./certbot-auto renew $CERTBOT_OPTS -n --cert-name $ROOT_DOMAIN 2>&1 |tee -a $$.log
 	else
 		false
 	fi
-	if [ $? -eq 0 ] ; then
+	if [ ${PIPESTATUS[0]} -eq 0 ] ; then
 		SUCCESS=1
 		cat $$.log
 	else
+		SUCCESS=0
 		echo "******************* SOMETHING GONE WRONG WITH LETSENCRYPT ************************"
 		cat $$.log
 		echo "******************* SOMETHING GONE WRONG WITH LETSENCRYPT ************************"
@@ -215,4 +228,5 @@ EOF
 		exit 1
 	fi
 	
-)
+)|tee -a $OSA_LOG_DIR/OSA-Letsencrypt.log 
+exit ${PIPESTATUS[0]}

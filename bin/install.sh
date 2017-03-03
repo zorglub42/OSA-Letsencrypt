@@ -9,7 +9,7 @@
  # <http://www.apache.org/licenses/LICENSE-2.0.html>
  #
  #--------------------------------------------------------
- # File Name   : install.sh
+ # File Name   : bin/install.sh
  #
  # Created     : 2017-03
  # Authors     : zorglub42 <contact(at)zorglub42.fr>
@@ -64,6 +64,7 @@ OSA_INSTALL_DIR=`grep '"runtimeApplianceConfigScript"' /etc/ApplianceManager/Set
 OSA_LOCAL_SERVER=`grep "APPLIANCE_LOCAL_SERVER=" $OSA_INSTALL_DIR/RunTimeAppliance/shell/doAppliance.sh|awk -F "=" '{print $2}'`
 OSA_LOCAL_USER=`grep "APPLIANCE_LOCAL_USER=" $OSA_INSTALL_DIR/RunTimeAppliance/shell/doAppliance.sh|awk -F "=" '{print $2}'`
 OSA_LOCAL_PWD=`grep "APPLIANCE_LOCAL_PWD=" $OSA_INSTALL_DIR/RunTimeAppliance/shell/doAppliance.sh|awk -F "=" '{print $2}'`
+OSA_LOG_DIR=`grep "APPLIANCE_LOG_DIR=" $OSA_INSTALL_DIR/RunTimeAppliance/shell/doAppliance.sh|awk -F "=" '{print $2}'`
 
 #Configure cron for renewal
 configureCron
@@ -72,17 +73,10 @@ configureCron
 changeProperty $INSTALL_DIR/web/include/Settings.php OSALEInstallDir '"'$INSTALL_DIR'";'
 
 #Configure connection settings to OSA
-changeProperty $INSTALL_DIR/bin/generateCerts.sh OSA_LOCAL_SERVER $OSA_LOCAL_SERVER
-changeProperty $INSTALL_DIR/bin/generateCerts.sh OSA_LOCAL_USER $OSA_LOCAL_USER
-changeProperty $INSTALL_DIR/bin/generateCerts.sh OSA_LOCAL_PWD $OSA_LOCAL_PWD
-
-changeProperty $INSTALL_DIR/bin/revokeCerts.sh OSA_LOCAL_SERVER $OSA_LOCAL_SERVER
-changeProperty $INSTALL_DIR/bin/revokeCerts.sh OSA_LOCAL_USER $OSA_LOCAL_USER
-changeProperty $INSTALL_DIR/bin/revokeCerts.sh OSA_LOCAL_PWD $OSA_LOCAL_PWD
-
-changeProperty $INSTALL_DIR/bin/cronRenew.sh OSA_LOCAL_SERVER $OSA_LOCAL_SERVER
-changeProperty $INSTALL_DIR/bin/cronRenew.sh OSA_LOCAL_USER $OSA_LOCAL_USER
-changeProperty $INSTALL_DIR/bin/cronRenew.sh OSA_LOCAL_PWD $OSA_LOCAL_PWD
+changeProperty $INSTALL_DIR/bin/conf.sh OSA_LOCAL_SERVER $OSA_LOCAL_SERVER
+changeProperty $INSTALL_DIR/bin/conf.sh OSA_LOCAL_USER $OSA_LOCAL_USER
+changeProperty $INSTALL_DIR/bin/conf.sh OSA_LOCAL_PWD $OSA_LOCAL_PWD
+changeProperty $INSTALL_DIR/bin/conf.sh OSA_LOG_DIR $OSA_LOG_DIR
 
 
 #Add sudo conf to allow apache to run addons scripts

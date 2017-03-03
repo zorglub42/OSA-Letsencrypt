@@ -1,15 +1,31 @@
 #!/bin/bash
+##--------------------------------------------------------
+ # Module Name : OSA-Letsencrypt
+ # Version : 1.0.0
+ #
+ #
+ # Copyright (c) 2017 Zorglub42
+ # This software is distributed under the Apache 2 license
+ # <http://www.apache.org/licenses/LICENSE-2.0.html>
+ #
+ #--------------------------------------------------------
+ # File Name   : bin/cronRenew.sh
+ #
+ # Created     : 2017-03
+ # Authors     : zorglub42 <contact(at)zorglub42.fr>
+ #
+ # Description :
+ #      cront task to renew certificates for existings node managed with OSA-Letsencrypt addon
+ #--------------------------------------------------------
+ # History     :
+ # 1.0.0 - 2017-03-01 : Release of the file
+##
 
-# Configuration section #############################################################################
-OSA_LOCAL_SERVER="http://127.0.0.1:81"
-OSA_LOCAL_USER=""
-OSA_LOCAL_PWD=""
-# End of Configuration section #############################################################################
-
-
+cd `dirname $0`
+. ./conf.sh
 
 (
-	cd `dirname $0`
+
 	for n in `ls ../data/` ; do
 		curl -i -s -k --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"  $OSA_LOCAL_SERVER/ApplianceManager/nodes/$n | grep "404 Not Found">/dev/null
 		if [ $? -eq 0 ] ; then
@@ -19,4 +35,5 @@ OSA_LOCAL_PWD=""
 			./generateCerts.sh $n renew
 		fi
 	done
-) 
+) |tee -a $OSA_LOG_DIR/OSA-Letsencrypt.log
+exit ${PIPESTATUS[0]}
