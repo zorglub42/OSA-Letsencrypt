@@ -53,16 +53,40 @@ function changeProperty(){
 	fi
 }
 
+[ ! -f /etc/ApplianceManager/Settings.ini.php ] && echo "It seems that there's not OSA here..... exiting....." && exit 1
+
+
 cd `dirname $0`
 INSTALL_DIR=`pwd|sed 's/\/bin//'` 
-[ ! -f /etc/ApplianceManager/Settings.ini.php ] && echo "It seems that there's not OSA here..... exiting....." && exit 1
 OSA_INSTALL_DIR=`grep '"runtimeApplianceConfigScript"' /etc/ApplianceManager/Settings.ini.php |awk -F '"' '{print $4}'  | sed 's|/RunTimeAppliance/shell/doAppliance.sh||'`
-
-
 [ ! -d $OSA_INSTALL_DIR -o ! -d $OSA_INSTALL_DIR/ApplianceManager.php -o ! -d $OSA_INSTALL_DIR/ApplianceManager.php/addons -o ! -d $OSA_INSTALL_DIR/RunTimeAppliance  ] && echo "OSA Not found at $OSA_INSTALL_DIR" && exit 1
 
+OSA_LOCAL_SERVER=`grep "APPLIANCE_LOCAL_SERVER=" $OSA_INSTALL_DIR/RunTimeAppliance/shell/doAppliance.sh|awk -F "=" '{print $2}'`
+OSA_LOCAL_USER=`grep "APPLIANCE_LOCAL_USER=" $OSA_INSTALL_DIR/RunTimeAppliance/shell/doAppliance.sh|awk -F "=" '{print $2}'`
+OSA_LOCAL_PWD=`grep "APPLIANCE_LOCAL_PWD=" $OSA_INSTALL_DIR/RunTimeAppliance/shell/doAppliance.sh|awk -F "=" '{print $2}'`
+
+#Configure cron for renewal
 configureCron
+
+#Configure general settings
 changeProperty $INSTALL_DIR/web/include/Settings.php OSALEInstallDir '"'$INSTALL_DIR'";'
+
+#Configure connection settings to OSA
+changeProperty $INSTALL_DIR/bin/generateCerts.sh OSA_LOCAL_SERVER $OSA_LOCAL_SERVER
+changeProperty $INSTALL_DIR/bin/generateCerts.sh OSA_LOCAL_USER $OSA_LOCAL_USER
+changeProperty $INSTALL_DIR/bin/generateCerts.sh OSA_LOCAL_PWD $OSA_LOCAL_PWD
+
+changeProperty $INSTALL_DIR/bin/revokeCerts.sh OSA_LOCAL_SERVER $OSA_LOCAL_SERVER
+changeProperty $INSTALL_DIR/bin/revokeCerts.sh OSA_LOCAL_USER $OSA_LOCAL_USER
+changeProperty $INSTALL_DIR/bin/revokeCerts.sh OSA_LOCAL_PWD $OSA_LOCAL_PWD
+
+changeProperty $INSTALL_DIR/bin/cronRenew.sh OSA_LOCAL_SERVER $OSA_LOCAL_SERVER
+changeProperty $INSTALL_DIR/bin/cronRenew.sh OSA_LOCAL_USER $OSA_LOCAL_USER
+changeProperty $INSTALL_DIR/bin/cronRenew.sh OSA_LOCAL_PWD $OSA_LOCAL_PWD
+
+exit
+
+
 cat >/etc/sudoers.d/OSA-Letsencrypt <<EOF
 #OSA-Letsencrypt addon
 Defaults:www-data    !requiretty

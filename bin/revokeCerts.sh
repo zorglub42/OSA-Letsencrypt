@@ -1,10 +1,6 @@
 #!/bin/bash
 
-#Generating endpoints entry for HTTP Host
-unset http_proxy
-
 # Configuration section #############################################################################
-OSA_LOG_DIR=/var/log/OSA
 OSA_LOCAL_SERVER="http://127.0.0.1:81"
 OSA_LOCAL_USER=""
 OSA_LOCAL_PWD=""

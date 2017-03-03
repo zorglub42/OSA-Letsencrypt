@@ -41,7 +41,8 @@ To deploy a new version of OSA-Letsencrypt addon from github do the folowing
 	
 		Ex:
 			cd /usr/local/src/OSA-Letsencrypt
-			git pull
+			git pull -f
+			./bin/install.sh
 
 Thats all!
 
