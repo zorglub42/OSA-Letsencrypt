@@ -71,6 +71,7 @@ For example you can use:
 
 	- --test-cert: to use letsencrypt staging servers
 	- --dry-run: to test addon on client side only
+	- --force-renewal: force certificate renewal even if not issued
 	
 			
 To entirely reset the Letsencrypt environnement like on a blank box, remove /etc/letsencrypt folder (if you already have one with existing live certificates, don't forget to backup it before removing)
