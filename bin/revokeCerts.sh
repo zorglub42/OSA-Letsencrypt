@@ -82,5 +82,5 @@ cd `dirname $0`
 		
 	curl -i -s -X POST -k --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"  $OSA_LOCAL_SERVER/ApplianceManager/nodes/$1/virtualhost >/dev/null
 	
-)|tee -a $OSA_LOG_DIR/OSA-Letsencrypt.log
+) 2>&1|tee -a $OSA_LOG_DIR/OSA-Letsencrypt.log
 exit ${PIPESTATUS[0]}

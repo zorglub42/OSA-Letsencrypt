@@ -21,7 +21,7 @@
  # 1.0.0 - 2017-03-01 : Release of the file
 */
 
-$strings["label.warning"]="<br><b>Note</b> L'addon OSA-Letsencrypt utilise les informations de configuration actuellement définies sur ces pages pour déterminer le ou les domaines à inclure dans le certificat.<br>De fait, si vous modifiez ces informations, il vous faut probablement supprimer et re-générer les certifcats Letsencrypt pour qu'ils soient en cohérence avec la configuration OSA.<br> N'oubliez pas alors d'enregistrer cette nouvelle configuration dans OSA !!!";
+$strings["label.warning"]="<br><b>Note</b> L'addon OSA-Letsencrypt utilise les informations \"FQDN du serveur\" de l'onglet \"Général\" et les directives apache \"ServerAllias\" de l'onglet \"Avancé\" pour déterminer le ou les domaines à inclure dans le certificat.<br>Veillez à mettre le domaine le plus précis dans \"FQDN du serveur\" (qui sert pour identifier ce certificat auprès de Letsencrypt).<br>Utiliser ici un domaine utilisé sur d'autres noeuds gérés avec Letsencrypt compromettra les certificats concernés";
 $strings["label.contact"]="Contact";
 $strings["label.current-config"]="Configuration pour letsencrypt";
 $strings["label.domains"]="Domaine(s)";

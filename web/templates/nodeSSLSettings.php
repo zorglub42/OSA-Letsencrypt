@@ -33,7 +33,7 @@ require_once "../include/Localization.php";
 									<label><?php echo Localization::getString("label.contact")?></label></label>
 								</div>
 								<div class="col-md-9">
-									<input class="form-control" id="leContact">
+									<input class="form-control" id="leContact" onchange="setLEContactModified()">
 								</div>
 							</div>
 							<div class="row" class="display: none" id="leDomainsGroup">
@@ -43,12 +43,9 @@ require_once "../include/Localization.php";
 								<div class="col-md-9" id="leDomains"></div>
 							</div>
 						</div>
-						<button id="btnCreateLEConf" type="button" class="btn btn-info" onclick="createLEConf()">
-							<span><?php echo Localization::getString("button.generateLE")?></span>
-						</button>
 						<button id="btnRemoveLEConf" type="button" class="btn btn-info" onclick="removeLEConf()">
 							<span><?php echo Localization::getString("button.removeLE")?></span>
 						</button>
-						<div><?php echo Localization::getString("label.warning")?></div>
+						<div id="leNote"><?php echo Localization::getString("label.warning")?></div>
 						<hr>
 					</div>

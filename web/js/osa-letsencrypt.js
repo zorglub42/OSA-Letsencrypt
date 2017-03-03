@@ -20,6 +20,17 @@
  # History     :
  # 1.0.0 - 2017-03-01 : Release of the file
 */
+var saveNodeHandler;
+
+
+function setLEContactModified(){
+	setNodeModified(true);
+	if ($("#leContact").val() == ""){
+		$("#osa").show();
+	}else{
+		$("#osa").hide();
+	}
+}
 function showConf(conf){
 	$("#leContact").val(conf.contact);
 	$('#leContact').prop('readonly', true);
@@ -27,13 +38,27 @@ function showConf(conf){
 
 	$("#leDomains").html(conf.domains.toString());
 	$("#leDomainsGroup").show();
-	$("#btnCreateLEConf").hide();
+	$("#leNote").hide();
 	$("#btnRemoveLEConf").show();
 	$("#osa").hide();
 }
 
+function saveNode4LE(){
+	if ($("#leContact").val() != "" && !$("#leContact").attr("readonly")){
+		//Letsencrypt contact has just been defied, trigged certificates generation  
+		createLEConf();
+	}else{
+		//Letsencrypt contact is empty or generation already dont, so generation is not required, trigger the OSA handler for save button
+		$("#saveNode").attr("onclick",saveNodeHandler)
+		$("#saveNode").click();
+	}
+}
 
 function addLEButton(){
+	saveNodeHandler=$("#saveNode").attr("onclick")
+
+
+
 	if (currentNode != null){
 		$.get( "addons/letsencrypt/templates/nodeSSLSettings.php", function( data ) {
 			curHTML=$("#tabs-SSL").html();
@@ -41,10 +66,12 @@ function addLEButton(){
 			$("#tabs-SSL").html(curHTML);
 			
 			$("#leDomainsGroup").hide();
-			$("#btnCreateLEConf").show();
+			$("#leNote").show();
 			$("#btnRemoveLEConf").hide();
 			$.get("addons/letsencrypt/certbot/" + currentNode.nodeName, showConf);
 		});
+		$("#saveNode").attr("onclick","saveNode4LE()")
+	
 	}else{
 		$.get( "addons/letsencrypt/templates/nodeSSLSaveFirst.php", function( data ) {
 			curHTML=$("#tabs-SSL").html();
@@ -64,7 +91,7 @@ function removeLEConf(){
 		  success: function (conf){
 						hideWait();
 						$("#leDomainsGroup").hide();
-						$("#btnCreateLEConf").show();
+						$("#leNote").show();
 						$("#btnRemoveLEConf").hide();
 						$("#osa").show();
 						$("#leContact").val("");
@@ -99,8 +126,10 @@ function createLEConf(){
 		  type:'PUT',
 		  data: data,
 		  success: function (conf){
-						hideWait();
-						showConf(conf);
+						//hideWait();
+						//trigger the OSA handler for save button
+						$("#saveNode").attr("onclick",saveNodeHandler)
+						$("#saveNode").click();
 					},
 		  error: displayErrorV2
 		});

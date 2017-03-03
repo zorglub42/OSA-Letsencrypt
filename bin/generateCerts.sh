@@ -35,7 +35,7 @@ function uploadCerts(){
 }
 
 function enableDisableNode(){
-	curl  -i -X POST -s -k --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"   -H 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8' -H 'Accept: application/json, text/javascript, */*; q=0.01'  "$OSA_LOCAL_SERVER/ApplianceManager/nodes/$1/status" --data "published=$2" >/tmp/$$.txt
+	curl  -i -X POST -s -k --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"   -H 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8' -H 'Accept: application/json, text/javascript, */*; q=0.01'  "$OSA_LOCAL_SERVER/ApplianceManager/nodes/$1/status" --data "published=$2&reload=no" >/tmp/$$.txt
 	if [ $? -eq 0 ] ; then
 		echo "Node $1 successfully paused/restarted ($2) ";
 	else
@@ -91,7 +91,7 @@ function getConflictingNodes(){
 			if [ $? -eq 0 ] ; then
 				if [ $PUBLISHED -eq 1 -a $MATCH -eq 1 ] ; then
 					echo $NODE_NAME
-					if [ $IP == '*' ] ; then
+					if  [[ $IP == '*' ]] ; then
 						touch 'listening-ok'
 					fi
 				fi
@@ -115,6 +115,7 @@ cd `dirname $0`
 . ./conf.sh
 
 (
+
 	[ "$1" == "" ] && usage
 	[ ! -x ../data/$1 ] && echo "Configuration for node $1 does not exists.... exiting" && exit 2
 	. ../data/$1
@@ -155,19 +156,16 @@ cd `dirname $0`
 	done
 	ROOT_DOMAIN=`echo "$DOMAINS"|awk '{print $1}'`
 
-getConflictingNodes
-exit 1
 	#Find nodes using same FQDN and port 80
 	CONFLICTING_NODES=`getConflictingNodes`
 	#Stop those node while letsencrypt try domain validation
 	for node in $CONFLICTING_NODES ; do
 		enableDisableNode $node 0
-		sleep 0.5
 	done
 
 	mkdir -p /var/www/le-domain-validation
 	LISTEN_DIRECTIVE=""										#Assume that there a Listening VHost on *80
-	[ ! f listening-ok ] && LISTEN_DIRECTIVE="Listen *:80" 	#In fact not, we didn't find a node listening on port 80 and * in getConflictingNodes
+	[ ! -f listening-ok ] && LISTEN_DIRECTIVE="Listen *:80" 	#In fact not, we didn't find a node listening on port 80 and * in getConflictingNodes
 	cat > $APACHE_SITES_ENABLED_DIR/le-domain-validation.conf <<EOF
 $LISTEN_DIRECTIVE
 <VirtualHost *:80>
@@ -215,7 +213,8 @@ EOF
 
 	rm $APACHE_SITES_ENABLED_DIR/le-domain-validation.conf
 	rm -rf  /var/www/le-domain-validation
-	$APACHE_INITD_FILE reload
+	[ -f listening-ok ] && rm listening-ok
+
 	
 	
 
@@ -223,8 +222,8 @@ EOF
 	#restart stoped node for letsencrypt domain validation
 	for node in $CONFLICTING_NODES ; do
 		enableDisableNode $node 1
-		sleep 0.1
 	done
+	$APACHE_INITD_FILE reload
 
 	if [ $SUCCESS -eq 1 ] ; then
 		grep "Cert not yet due for renewal" $$.log>/dev/null
@@ -241,6 +240,5 @@ EOF
 		rm $$.log
 		exit 1
 	fi
-	
-)|tee -a $OSA_LOG_DIR/OSA-Letsencrypt.log 
+) 2>&1|tee -a $OSA_LOG_DIR/OSA-Letsencrypt.log 
 exit ${PIPESTATUS[0]}

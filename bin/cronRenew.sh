@@ -35,5 +35,5 @@ cd `dirname $0`
 			./generateCerts.sh $n renew
 		fi
 	done
-) |tee -a $OSA_LOG_DIR/OSA-Letsencrypt.log
+) 2>&1 |tee -a $OSA_LOG_DIR/OSA-Letsencrypt.log
 exit ${PIPESTATUS[0]}

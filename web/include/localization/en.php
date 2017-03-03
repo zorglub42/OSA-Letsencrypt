@@ -21,7 +21,7 @@
  # 1.0.0 - 2017-03-01 : Release of the file
 */
 
-$strings["label.warning"]="<br><b>Note</b>OSA-Letsencrypt addon use configuration informations curently defined in this pages to define domain(s) to include in the server certificate.<br>As concequence, if you modify these informations, you probaby need to remove and re-generate certificate to have them coherent with OSA configuration.<br>Then, don't forget to save this new node configuration in OSA!!!";
+$strings["label.warning"]="<br><b>Note</b>OSA-Letsencrypt addon use \"Server FQDN\" field on \"General\" tab and \"ServerAllias\" apache configuration directives on \"Advanced\" tab to define domain(s) included in Letsencrypt certificate.<br>Please define the mode restrictive domain in  \"Server FQDN \" (it is used to identify the certificate on Letsencrypt).<br>Using a domain defined on other nodes managed will Letsencrypt will compromize those certificates.";
 $strings["label.contact"]="Contact";
 $strings["label.current-config"]="Letsencrypt configuration";
 $strings["label.domains"]="Domain(s)";
