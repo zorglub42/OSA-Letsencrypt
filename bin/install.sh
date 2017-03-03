@@ -84,9 +84,8 @@ changeProperty $INSTALL_DIR/bin/cronRenew.sh OSA_LOCAL_SERVER $OSA_LOCAL_SERVER
 changeProperty $INSTALL_DIR/bin/cronRenew.sh OSA_LOCAL_USER $OSA_LOCAL_USER
 changeProperty $INSTALL_DIR/bin/cronRenew.sh OSA_LOCAL_PWD $OSA_LOCAL_PWD
 
-exit
 
-
+#Add sudo conf to allow apache to run addons scripts
 cat >/etc/sudoers.d/OSA-Letsencrypt <<EOF
 #OSA-Letsencrypt addon
 Defaults:www-data    !requiretty
@@ -98,11 +97,12 @@ EOF
 
 
 
-
+#Configure OSA to use ths addon
 [ -L $OSA_INSTALL_DIR/ApplianceManager.php/addons/letsencrypt ] && rm $OSA_INSTALL_DIR/ApplianceManager.php/addons/letsencrypt
 ln -s $INSTALL_DIR/web $OSA_INSTALL_DIR/ApplianceManager.php/addons/letsencrypt
 chmod 777 $INSTALL_DIR/data
 
+#Install certbot-auto and prepare it tu run
 cd $INSTALL_DIR/bin
 curl -s  https://dl.eff.org/certbot-auto -o certbot-auto
 chmod u+x certbot-auto
