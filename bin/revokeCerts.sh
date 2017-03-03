@@ -46,7 +46,7 @@ function cleanCerts(){
 	
 	SUCCESS=0
 	if [ -f /etc/letsencrypt/live/$ROOT_DOMAIN/fullchain.pem ] ; then
-		./certbot-auto revoke $CERTBOT_OPTS --cert-path /etc/letsencrypt/live/$ROOT_DOMAIN/fullchain.pem  --agree-tos --email $LE_MAIL  -n >$$.log 2>&1
+		./certbot-auto revoke $CERTBOT_OPTS --cert-path /etc/letsencrypt/live/$ROOT_DOMAIN/fullchain.pem  --agree-tos --email $LE_MAIL  -n &>$$.log 
 	else
 		echo "Can't find any certificates for $1"
 		true

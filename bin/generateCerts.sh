@@ -39,8 +39,10 @@ function enableDisableNode(){
 
 function getConflictingNodes(){
 	
-	
+ 	
  	curl -s -k --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"  "$OSA_LOCAL_SERVER/ApplianceManager/nodes/?order=nodeName&nodeNameFilter=&nodeDescriptionFilter=&localIPFilter=&portFilter=80&serverFQDNFilter="|sed 's/\\n/\n/g'|(
+		NODE_NAME="";
+		MATCH=0
 		while read -r l ; do
 			echo $l | grep "nodeName">/dev/null
 			if [ $? -eq 0 ] ; then
@@ -69,13 +71,15 @@ function getConflictingNodes(){
 			
 			echo $l | grep "isPublished">/dev/null
 			if [ $? -eq 0 ] ; then
-				PUBLISHED=`echo $l| awk -F ":" '{print $2}'|awk -F ',' '{print $1}'`
+				PUBLISHED=`echo $l| awk -F ":" '{print $2}'|awk -F ',' '{print $1}'|sed 's/"//g'`
 			fi
 			echo $l | grep "}" >/dev/null
 			if [ $? -eq 0 ] ; then
 				if [ $PUBLISHED -eq 1 -a $MATCH -eq 1 ] ; then
 					echo $NODE_NAME
 				fi
+				NODE_NAME="";
+				MATCH=0
 			fi
 		done
 	)
@@ -133,17 +137,17 @@ function checkRestring(){
 	
 	
 	#Find nodes using same FQDN and port 80
-	CONFLICTING_NODES=`getConflictingNodes `
+	CONFLICTING_NODES=`getConflictingNodes`
 
 	#Stop those node while letsencrypt try domain validation
 	for node in $CONFLICTING_NODES ; do
 		enableDisableNode $node 0
+		sleep 0.1
 	done
 
 	mkdir -p /var/www/le-domain-validation
 	cat > $APACHE_SITES_ENABLED_DIR/le-domain-validation.conf <<EOF
-Listen *:80
-<VirtualHost $NODE_FQDN:80>
+<VirtualHost *:80>
         # This virtualhost is created for letsencrypt domain validation process. If you see this file, somethings is probably gone wrong......
         ServerName $NODE_FQDN
 EOF
@@ -170,9 +174,9 @@ EOF
 	SUCCESS=0
 	
 	if [ "$LE_ACTION" == "create" ] ; then
-		./certbot-auto certonly $CERTBOT_OPTS -n --webroot -w /var/www/le-domain-validation $LE_CERT_DOMAIN --agree-tos  --email $LE_MAIL  > $$.log 
+		./certbot-auto certonly $CERTBOT_OPTS -n --webroot -w /var/www/le-domain-validation $LE_CERT_DOMAIN --agree-tos  --email $LE_MAIL  &> $$.log 
 	elif [ "$LE_ACTION" == "renew" ] ; then
-		./certbot-auto renew $CERTBOT_OPTS -n --cert-name $ROOT_DOMAIN
+		./certbot-auto renew $CERTBOT_OPTS -n --cert-name $ROOT_DOMAIN &>$$.log
 	else
 		false
 	fi
@@ -184,27 +188,33 @@ EOF
 		cat $$.log
 		echo "******************* SOMETHING GONE WRONG WITH LETSENCRYPT ************************"
 	fi
-	rm $$.log
-	#~ echo "Check conf?"
-	#~ read l
 
 	rm $APACHE_SITES_ENABLED_DIR/le-domain-validation.conf
 	rm -rf  /var/www/le-domain-validation
 	$APACHE_INITD_FILE reload
+	
 	
 
 
 	#restart stoped node for letsencrypt domain validation
 	for node in $CONFLICTING_NODES ; do
 		enableDisableNode $node 1
+		sleep 0.1
 	done
 
 	if [ $SUCCESS -eq 1 ] ; then
-		uploadCerts $1 $ROOT_DOMAIN
+		grep "Cert not yet due for renewal" $$.log>/dev/null
+		renew=$?
 		
-		curl -i -s -X POST -k --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"  $OSA_LOCAL_SERVER/ApplianceManager/nodes/$1/virtualhost >/dev/null
+		if [ "$LE_ACTION" == "create" -o $renew -ne 0 ] ; then
+			uploadCerts $1 $ROOT_DOMAIN
+			
+			curl -i -s -X POST -k --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"  $OSA_LOCAL_SERVER/ApplianceManager/nodes/$1/virtualhost >/dev/null
+		fi
+		rm $$.log
 		exit 0
 	else
+		rm $$.log
 		exit 1
 	fi
 	
