@@ -3,8 +3,7 @@ Addons for Open Services Access (OSA)
 
 OSA-Letsencrypt is an addon for OSA (https://github.com/zorglub42/OSA) to manage HTTPS nodes certificates with Letsencrypt (https://letsencrypt.org/) 
 
-This feature is available from SSL Setting tab on node properties.
-NOTE: it's available only existing nodes. When you create a node and plan to use it, first save the node.
+This feature is available from SSL Setting tab on node properties. **NOTE:** it's available only existing nodes. When you create a node and plan to use it, first save the node.
 
 
 The certificate name used as identifier to revoke or delete certs in letsencrypt is the "Server FQDN" field of the concerned node.
