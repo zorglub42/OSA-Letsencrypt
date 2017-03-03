@@ -45,3 +45,19 @@ To deploy a new version of OSA-Letsencrypt addon from github do the folowing
 
 Thats all!
 
+## Try and debug
+It's possible to run OSA-Letsencrypt addon on letsencrypt staging server.
+For this :
+- connect as root
+- goto to bin folder in installation dir (Ex.)
+	
+		Ex:
+			cd /usr/local/src/OSA-Letsencrypt/bin
+			
+- edit conf.sh file and add wished flags to certbot (see certbot documentation at https://certbot.eff.org/docs/using.html).
+For example you can use:
+
+	- --test-cert: to use letsencrypt staging servers
+	- --dry-run: to test addon on client side only
+	
+			
