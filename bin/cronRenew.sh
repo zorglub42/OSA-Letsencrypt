@@ -25,13 +25,16 @@ cd `dirname $0`
 . ./conf.sh
 
 (
+	echo "*********** $0 IS STARTING *****************************************************************************************"
 
 	for n in `ls ../data/` ; do
 		curl -i -s -k --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"  $OSA_LOCAL_SERVER/ApplianceManager/nodes/$n | grep "404 Not Found">/dev/null
 		if [ $? -eq 0 ] ; then
-			./revokeCerts.sh $n
+			 #./revokeCerts.sh $n
+			echo revoking certs for $n
 			rm ../data/$n
 		else		
+			echo renewing certs for $n
 			./generateCerts.sh $n renew
 		fi
 	done

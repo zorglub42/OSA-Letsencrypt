@@ -37,4 +37,4 @@ OSA_LOG_DIR=/var/log/OSA
 #			--test-cert: use letsencrypt staging servers
 #			--dry-run: test only client side
 #			--force-renewal: force certificates renewal even if not issued
-CERTBOT_OPTS=""
+CERTBOT_OPTS="--test-cert"

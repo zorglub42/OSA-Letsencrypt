@@ -21,6 +21,7 @@
  # 1.0.0 - 2017-03-01 : Release of the file
 */
 var saveNodeHandler;
+var originalDomains="";
 
 
 function setLEContactModified(){
@@ -41,11 +42,14 @@ function showConf(conf){
 	$("#leNote").hide();
 	$("#btnRemoveLEConf").show();
 	$("#osa").hide();
+	
+	originalDomains=conf.domains.toString();
 }
 
 function saveNode4LE(){
-	if ($("#leContact").val() != "" && !$("#leContact").attr("readonly")){
-		//Letsencrypt contact has just been defied, trigged certificates generation  
+	//if ($("#leContact").val() != "" && !$("#leContact").attr("readonly")){
+	if (originalDomains != getCurrentDomains().toString()){
+		//Domains have just changed form existing OSA-Letsencrypt configuration or it's a config creation request : generate certs  
 		createLEConf();
 	}else{
 		//Letsencrypt contact is empty or generation already dont, so generation is not required, trigger the OSA handler for save button
@@ -56,7 +60,7 @@ function saveNode4LE(){
 
 function addLEButton(){
 	saveNodeHandler=$("#saveNode").attr("onclick")
-
+	originalDomains="";
 
 
 	if (currentNode != null){
@@ -101,20 +105,31 @@ function removeLEConf(){
 		});
 
 }
-function createLEConf(){
-	setNodeModified(true);
+
+function getCurrentDomains(){
+	var commentRegExp=/^[ |\t]*#/
+	var serverAliasRegExp=/^[ |\t]*ServerAlias[ |\t]+(.+)/
+
 	domains=[];
 	
 	domains.push($("#serverFQDN").val());
 	
 	xtraConfLines=$("#additionalConfiguration").val().split('\n');
 	for (i=0;i<xtraConfLines.length; i++){
-		if (xtraConfLines[i].indexOf("ServerAlias")>=0){
-			alias=xtraConfLines[i].split(" ");
-			domains.push(alias[1]);
+		if (!xtraConfLines[i].match(commentRegExp) &&  xtraConfLines[i].match(serverAliasRegExp)){
+			alias=xtraConfLines[i].replace(serverAliasRegExp,"$1")
+			domains.push(alias);
 		}
 	}
-	 data= {
+	
+	return domains
+}
+
+function createLEConf(){
+	setNodeModified(true);
+	domains=getCurrentDomains();
+	
+	data= {
 					"contact": $("#leContact").val(),
 					"domains": domains
 	};
@@ -123,10 +138,9 @@ function createLEConf(){
 	$.ajax({
 		  url: "addons/letsencrypt/certbot/" + currentNode.nodeName,
 		  dataType: 'json',
-		  type:'PUT',
+		  type:'POST',
 		  data: data,
 		  success: function (conf){
-						//hideWait();
 						//trigger the OSA handler for save button
 						$("#saveNode").attr("onclick",saveNodeHandler)
 						$("#saveNode").click();

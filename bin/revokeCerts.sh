@@ -21,12 +21,22 @@
  # 1.0.0 - 2017-03-01 : Release of the file
 ##
 
+##---------------------------------------------------------
+# Display usage help message
+#----------------------------------------------------------
+# No params
+##---------------------------------------------------------
 function usage(){
 	echo $0 node-name
 	exit 1
 }
 
 
+##---------------------------------------------------------
+# Remove certs from OSA
+#----------------------------------------------------------
+# $1: nodeName
+##---------------------------------------------------------
 function cleanCerts(){
 	curl -i -s -X DELETE -k --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"  $OSA_LOCAL_SERVER/ApplianceManager/nodes/$1/cert >/dev/null
 	curl -i -s -X DELETE -k --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"  $OSA_LOCAL_SERVER/ApplianceManager/nodes/$1/privateKey >/dev/null
@@ -41,18 +51,19 @@ cd `dirname $0`
 
 
 (
+	echo "*********** $0 IS STARTING *****************************************************************************************"
 	[ "$1" == "" ] && usage
 	[ ! -x ../data/$1 ] && echo "Configuration for node $1 does not exists.... exiting" && exit 2
 	. ../data/$1
 
 	
-        #Raw domain list for validation
-        DOMAINS=""
-        for p in $LE_CERT_DOMAIN ; do
-                if [ "$p" != "-d" ] ; then
-                        DOMAINS="$DOMAINS $p"
-                fi
-        done
+	#Raw domain list for validation
+	DOMAINS=""
+	for p in $LE_CERT_DOMAIN ; do
+			if [ "$p" != "-d" ] ; then
+					DOMAINS="$DOMAINS $p"
+			fi
+	done
 	ROOT_DOMAIN=`echo "$DOMAINS"|awk '{print $1}'`
 	
 	
@@ -76,10 +87,8 @@ cd `dirname $0`
 
 
 	cleanCerts $1 
-	rm -rf /etc/letsencrypt/archive/$ROOT_DOMAIN
-	rm -rf /etc/letsencrypt/live/$ROOT_DOMAIN
-	rm -rf /etc/letsencrypt/renewal/$ROOT_DOMAIN.conf
 		
+	#Deploy (with auto-signed certs) configuration
 	curl -i -s -X POST -k --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"  $OSA_LOCAL_SERVER/ApplianceManager/nodes/$1/virtualhost >/dev/null
 	
 ) 2>&1|tee -a $OSA_LOG_DIR/OSA-Letsencrypt.log

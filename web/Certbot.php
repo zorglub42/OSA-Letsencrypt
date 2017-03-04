@@ -68,11 +68,11 @@ class Certbot{
 	}
 
    	/**
-   	 * Create config
+   	 * Create or update a config
    	 *
-   	 * Create configuration for a node, including letsencrypt domain validation process and node certificates update
+   	 * Create or update configuration for a node, including letsencrypt domain validation process, certificates (re)generation, node certificates update, node deployment
    	 *
-	 * @url PUT /:node
+	 * @url POST /:node
 	 *
 	 * @param string $node node name for which configuration is requested {@required true}
 	 * @param email $contact contact email for letsencrypt {@required true}
@@ -80,12 +80,9 @@ class Certbot{
    	 *
 	 * @return OSALEConfig config definition
 	 */
-	function createConf( $node, $contact, $domains){
+	function generateConfAndCerts( $node, $contact, $domains){
 		include 'include/Settings.php';
 
-		if (file_exists($OSALEInstallDir . "/data/$node")){
-			throw new RestException(409,"Configuration already exists");
-		}
 		$bashDomains="\"";
 		foreach ($domains as $d){
 			if ($bashDomains !="\""){
