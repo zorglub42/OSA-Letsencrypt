@@ -133,6 +133,37 @@ function getConflictingNodes(){
 
 }
 
+
+##---------------------------------------------------------
+# Ckeck if renew is required for a conf
+# Exit with succes iff not
+#----------------------------------------------------------
+# No params
+##---------------------------------------------------------
+function isRenewRequired(){
+	if [ $LE_ACTION == "renew" ] ; then
+	
+		echo "$CERTBOT_OPTS" | grep "\-\-force-renewal"
+		if [ $? -ne 0 ] ; then
+		
+			CERT=`grep "cert" /etc/letsencrypt/renewal/$NODE_FQDN.conf |awk -F "= " '{print $2}'`
+
+			CERT_ISSUE_DATE=`openssl x509 -in $CERT -text -noout| grep "Not After" |awk -F "After : "  '{print $2}'`
+			CERT_ISSUE_DATE=`date -d "$CERT_ISSUE_DATE" '+%Y%m%d'`
+
+
+			RENEW_FROM=`date --date "$RENEW_LIMIT days" '+%Y%m%d'`
+
+			echo "RENEW LIMIT=$RENEW_LIMIT RENEW_FROM=$RENEW_FROM ISSUE=$CERT_ISSUE_DATE" 
+			if [ "$RENEW_FROM" \> "$CERT_ISSUE_DATE" ] ; then
+				echo "Renew is required"
+			else
+				echo "Renew IS NOT required"
+				exit 0
+			fi
+		fi
+	fi
+}
 ##---------------------------------------------------------
 # Main prog
 #----------------------------------------------------------
@@ -175,7 +206,14 @@ cd `dirname $0`
 	#checkRestring
 	
 	#Get FQDN dor required node
+	echo curl -s -k --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"  $OSA_LOCAL_SERVER/ApplianceManager/nodes/$1
 	NODE_FQDN=`curl -s -k --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"  $OSA_LOCAL_SERVER/ApplianceManager/nodes/$1| grep serverFQDN| awk -F ":" '{print $2}'|awk -F '"' '{print $2}'`
+	if [ "$NODE_FQDN" == "" ] ; then
+		echo "Can't find node FQDN from $1.... exiting...."
+		exit 1
+	fi
+	isRenewRequired
+	
 	#Raw domain list for validation
 	DOMAINS=""
 	for p in $LE_CERT_DOMAIN ; do

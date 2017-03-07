@@ -22,7 +22,7 @@
 ##
 
 # Connection to OSA local server
-OSA_LOCAL_SERVER="http://127.0.0.1:81"
+OSA_LOCAL_SERVER="http://127.0.0.1:82"
 OSA_LOCAL_USER=""
 OSA_LOCAL_PWD=""
 
@@ -38,3 +38,9 @@ OSA_LOG_DIR=/var/log/OSA
 #			--dry-run: test only client side
 #			--force-renewal: force certificates renewal even if not issued
 CERTBOT_OPTS="--test-cert"
+
+
+#Renew checking
+
+#Number of days before certs is issued to trigger renewal
+RENEW_LIMIT=10

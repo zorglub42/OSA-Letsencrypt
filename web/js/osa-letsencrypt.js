@@ -48,7 +48,7 @@ function showConf(conf){
 
 function saveNode4LE(){
 	//if ($("#leContact").val() != "" && !$("#leContact").attr("readonly")){
-	if (originalDomains != getCurrentDomains().toString()){
+	if (originalDomains != getCurrentDomains().toString() && $("#leContact").val() != ""){
 		//Domains have just changed form existing OSA-Letsencrypt configuration or it's a config creation request : generate certs  
 		createLEConf();
 	}else{
