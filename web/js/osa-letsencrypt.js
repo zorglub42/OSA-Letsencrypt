@@ -151,5 +151,5 @@ function createLEConf(){
 	
 }
 
-addOSADivHook("tabs-SSL", addLEButton);
+addonAddGUIHook("#tabs-SSL", addLEButton);
 
