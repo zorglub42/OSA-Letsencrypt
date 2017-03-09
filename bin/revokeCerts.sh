@@ -53,8 +53,8 @@ cd `dirname $0`
 (
 	echo "*********** $0 IS STARTING *****************************************************************************************"
 	[ "$1" == "" ] && usage
-	[ ! -x ../data/$1 ] && echo "Configuration for node $1 does not exists.... exiting" && exit 2
-	. ../data/$1
+	[ ! -x ../data/$1.conf ] && echo "Configuration for node $1 does not exists.... exiting" && exit 2
+	. ../data/$1.conf
 
 	
 	#Raw domain list for validation

@@ -25,6 +25,9 @@ $strings["label.warning"]="<br><b>Note</b>OSA-Letsencrypt addon use \"Server FQD
 $strings["label.contact"]="Contact";
 $strings["label.current-config"]="Letsencrypt configuration";
 $strings["label.domains"]="Domain(s)";
+$strings["label.issuing"]="Issuing date";
 $strings["label.save-first"]="To manage certificates with Letsencrypt, yu first need to save this node";
 $strings["button.generateLE"]="Generate certificates with Letsencryt";
 $strings["button.removeLE"]="Remove Letsencryt certificates ";
+
+$strings["date.format.parseexact"]="mm/dd/yyyy hh:MM";

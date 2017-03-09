@@ -39,7 +39,12 @@ class OSALEConfig{
 	 public  $domains;
 	/**
 	 * @var  string 
-	 * Commetn about last event {@required true}
+	 * Comment about last event {@required true}
 	 */
 	 public  $lastEventComment;
+	 /**
+	  * @var string
+	  * Issuing date is in ISO 8601 full format
+	  */
+	 public $issuing;
 }

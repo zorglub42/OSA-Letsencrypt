@@ -22,15 +22,15 @@
 */
 
 
-require_once "../include/Localization.php";
+require_once "../include/LE_Localization.php";
 ?>
 					<div id="LEgenerate">
 						<div id="leSettings" >
 							<hr>
-							<label><?php echo Localization::getString("label.current-config")?></label>
+							<label><?php echo LE_Localization::getString("label.current-config")?></label>
 							<div class="row">
 								<div class="col-md-3">
-									<label><?php echo Localization::getString("label.contact")?></label></label>
+									<label><?php echo LE_Localization::getString("label.contact")?></label></label>
 								</div>
 								<div class="col-md-9">
 									<input class="form-control" id="leContact" onchange="setLEContactModified()">
@@ -38,14 +38,20 @@ require_once "../include/Localization.php";
 							</div>
 							<div class="row" class="display: none" id="leDomainsGroup">
 								<div class="col-md-3">
-									<label><?php echo Localization::getString("label.domains")?></label></label>
+									<label><?php echo LE_Localization::getString("label.domains")?></label></label>
 								</div>
 								<div class="col-md-9" id="leDomains"></div>
 							</div>
+							<div class="row" class="display: none" id="leIssuingDateGroup">
+								<div class="col-md-3">
+									<label><?php echo LE_Localization::getString("label.issuing")?></label></label>
+								</div>
+								<div class="col-md-9" id="leIssuing"></div>
+							</div>
 						</div>
 						<button id="btnRemoveLEConf" type="button" class="btn btn-info" onclick="removeLEConf()">
-							<span><?php echo Localization::getString("button.removeLE")?></span>
+							<span><?php echo LE_Localization::getString("button.removeLE")?></span>
 						</button>
-						<div id="leNote"><?php echo Localization::getString("label.warning")?></div>
+						<div id="leNote"><?php echo LE_Localization::getString("label.warning")?></div>
 						<hr>
 					</div>

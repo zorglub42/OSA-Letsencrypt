@@ -24,7 +24,7 @@
 */
 
 
-class Localization{
+class LE_Localization{
 	private static $languages = Array();
 	private static $strings =null;
 	public static $debug=false;

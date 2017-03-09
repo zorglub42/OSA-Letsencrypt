@@ -1,4 +1,4 @@
-
+<?php
 /*--------------------------------------------------------
  # Module Name : OSA-Letsencrypt
  # Version : 1.0.0
@@ -20,6 +20,12 @@
  # History     :
  # 1.0.0 - 2017-03-01 : Release of the file
 */
+
+
+require_once dirname(__FILE__) . '/../include/LE_Localization.php';
+?>
+
+
 var saveNodeHandler;
 var originalDomains="";
 
@@ -33,12 +39,24 @@ function setLEContactModified(){
 	}
 }
 function showConf(conf){
+	if (conf.issuing != "" && conf.issuing != null){
+		userDate = new Date(conf.issuing);
+		
+		dateFormated = userDate.format("<?php echo LE_Localization::getJSString("date.format.parseexact")?>");
+		console.log(dateFormated);
+	}else{
+		dateFormated="";
+	}
 	$("#leContact").val(conf.contact);
 	$('#leContact').prop('readonly', true);
+	
 	
 
 	$("#leDomains").html(conf.domains.toString());
 	$("#leDomainsGroup").show();
+	
+	$("#leIssuing").html(dateFormated);
+	$("#leIssuingDateGroup").show();
 	$("#leNote").hide();
 	$("#btnRemoveLEConf").show();
 	$("#osa").hide();
@@ -70,6 +88,8 @@ function addLEButton(){
 			$("#tabs-SSL").html(curHTML);
 			
 			$("#leDomainsGroup").hide();
+			$("#leIssuingDateGroup").hide();
+			
 			$("#leNote").show();
 			$("#btnRemoveLEConf").hide();
 			$.get("addons/letsencrypt/certbot/" + currentNode.nodeName, showConf);
@@ -95,6 +115,7 @@ function removeLEConf(){
 		  success: function (conf){
 						hideWait();
 						$("#leDomainsGroup").hide();
+						$("#leIssuingDateGroup").hide();
 						$("#leNote").show();
 						$("#btnRemoveLEConf").hide();
 						$("#osa").show();

@@ -134,6 +134,21 @@ function getConflictingNodes(){
 }
 
 
+function setCertISOIssueDate(){
+	CERT=`grep "cert" /etc/letsencrypt/renewal/$NODE_FQDN.conf |awk -F "= " '{print $2}'`
+
+	CERT_ISSUE_DATE=`openssl x509 -in $CERT -text -noout| grep "Not After" |awk -F "After : "  '{print $2}'`
+	CERT_ISSUE_DATE=`date -d "$CERT_ISSUE_DATE" --iso-8601=seconds`
+
+
+	grep -v "LE_CERT_ISSUING" ../data/$1.conf > $$.tmp
+	
+	echo 'LE_CERT_ISSUING="'$CERT_ISSUE_DATE'"'>> $$.tmp
+	:> ../data/$1.conf
+	cat $$.tmp>> ../data/$1.conf
+	rm $$.tmp
+}
+
 ##---------------------------------------------------------
 # Ckeck if renew is required for a conf
 # Exit with succes iff not
@@ -178,8 +193,8 @@ cd `dirname $0`
 	echo "*********** $0 IS STARTING *****************************************************************************************"
 
 	[ "$1" == "" ] && usage
-	[ ! -x ../data/$1 ] && echo "Configuration for node $1 does not exists.... exiting" && exit 2
-	. ../data/$1
+	[ ! -x ../data/$1.conf ] && echo "Configuration for node $1 does not exists.... exiting" && exit 2
+	. ../data/$1.conf
 
 	if [ "$2" == "renew" ] ; then
 		LE_ACTION="renew"
@@ -310,6 +325,7 @@ EOF
 		;;
 		1)
 			echo "certbot-auto was OK but no certs generetated (renewal not required OR certs not re-generated)"
+			setCertISOIssueDate $1
 			RC=0
 		;;
 		2)
@@ -317,6 +333,8 @@ EOF
 			echo "Some new certs have been generated. Uploading them to OSA and updating node conf"
 			echo $PEM_DIR
 			uploadCerts $1 $PEM_DIR
+			setCertISOIssueDate $1
+
 			curl -i -s -X POST -k --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"  $OSA_LOCAL_SERVER/ApplianceManager/nodes/$1/virtualhost >/dev/null
 			RC=0
 		;;
