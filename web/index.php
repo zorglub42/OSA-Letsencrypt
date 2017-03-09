@@ -34,6 +34,10 @@ header("Access-Control-Allow-Origin: *");
 
 
 $r = new Restler();
+if (isset(getallheaders()["Public-Root-URI"])){
+	$r->setBaseUrl(getallheaders()["Public-Root-URI"] . "/addons/letsencrypt");
+}
+
 $r->setSupportedFormats('JsonFormat' ,'UrlEncodedFormat');
 $r->addAPIClass('Luracast\\Restler\\Resources');  //this creates resources.json at API root 
 

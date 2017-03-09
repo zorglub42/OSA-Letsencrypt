@@ -34,7 +34,7 @@ class UploadFormat extends Format
      *
      * @var array
      */
-    public static $allowedMimeTypes = array('image/jpeg', 'image/png');
+    public static $allowedMimeTypes = array(); //array('image/jpeg', 'image/png');
     /**
      * use it to restrict uploads based on file size
      * set it to 0 to allow all sizes

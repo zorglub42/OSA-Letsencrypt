@@ -448,13 +448,15 @@ class Restler extends EventDispatcher
             (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') || // Amazon ELB
             (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on');
 
-        $baseUrl = ($https ? 'https://' : 'http://') . $_SERVER['SERVER_NAME'];
+        if (empty($this->baseUrl)){
+			$baseUrl = ($https ? 'https://' : 'http://') . $_SERVER['SERVER_NAME'];
 
-        if (!$https && $port != '80' || $https && $port != '443')
-            $baseUrl .= ':' . $port;
+			if (!$https && $port != '80' || $https && $port != '443')
+				$baseUrl .= ':' . $port;
 
-        $this->baseUrl = rtrim($baseUrl
-            . substr($fullPath, 0, strlen($fullPath) - strlen($path)), '/');
+			$this->baseUrl = rtrim($baseUrl
+				. substr($fullPath, 0, strlen($fullPath) - strlen($path)), '/');
+		}
 
         $path = rtrim(strtok($path, '?'), '/'); //remove query string and trailing slash if found any
         $path = str_replace(
@@ -1360,6 +1362,9 @@ class Restler extends EventDispatcher
     {
         return $this->baseUrl;
     }
+    public function setBaseUrl($baseUrl){
+		$this->baseUrl=$baseUrl;
+	}
 
     /**
      * List of events that fired already

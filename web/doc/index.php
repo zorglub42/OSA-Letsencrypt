@@ -99,8 +99,6 @@
         <a id="logo" href="https://github.com/Luracast/Restler-API-Explorer" target="_blank">API Explorer</a>
         <form id='api_selector'>
             <div class='input'><input placeholder="http://example.com/api" id="input_baseUrl" name="baseUrl" type="hidden"/></div>
-            <div class='input'><input placeholder="api_key" id="input_apiKey" name="apiKey" type="text"/></div>
-            <div class='input'><a id="explore" href="#">Explore</a></div>
         </form>
     </div>
 </div>

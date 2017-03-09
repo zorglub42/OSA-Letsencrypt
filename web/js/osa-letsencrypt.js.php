@@ -172,5 +172,9 @@ function createLEConf(){
 	
 }
 
+//Triggers addLEButton where dom object with id=tabb-SSL is available
 addonAddGUIHook("#tabs-SSL", addLEButton);
+
+//Add OSA-Letsencrypt API doucmentation menu item
+addonAddDocURI("letsencrypt", "doc");
 

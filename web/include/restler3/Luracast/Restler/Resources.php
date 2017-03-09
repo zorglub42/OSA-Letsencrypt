@@ -157,7 +157,8 @@ class Resources implements iUseAuthentication, iProvideMultiVersionApi
         ) {
             //by pass call, compose, postCall stages and directly send response
             $this->restler->composeHeaders();
-            die($this->restler->cache->get($this->cacheName));
+            
+            die(preg_replace('/"basePath": ".*"/', '"basePath": "' . $this->restler->getBaseUrl() . '"', $this->restler->cache->get($this->cacheName)));
         }
     }
 
@@ -340,7 +341,9 @@ class Resources implements iUseAuthentication, iProvideMultiVersionApi
                         $httpMethod != 'DELETE'
                     )
                 ) {
-                    $operation->parameters[] = $this->_getBody();
+					if ($this->_getBody()!= null){
+						$operation->parameters[] = $this->_getBody();
+					}
                 }
                 if (isset($m['return']['type'])) {
                     $responseClass = $m['return']['type'];
@@ -672,6 +675,8 @@ class Resources implements iUseAuthentication, iProvideMultiVersionApi
         if (count($p) == 0 && $this->_fullDataRequested) {
             $r->required = $this->_fullDataRequested->required;
             $r->defaultValue = "{\n    \"property\" : \"\"\n}";
+            #BHE FIX EMPTY BODY
+            return null;
         } else {
             $r->description .= " with the following"
                 . (count($p) > 1 ? ' properties.' : ' property.')
@@ -850,7 +855,7 @@ class Resources implements iUseAuthentication, iProvideMultiVersionApi
         ) {
             //by pass call, compose, postCall stages and directly send response
             $this->restler->composeHeaders();
-            die($this->restler->cache->get($this->cacheName));
+            die(preg_replace('/"basePath": ".*"/', '"basePath": "' . $this->restler->getBaseUrl() . '"', $this->restler->cache->get($this->cacheName)));
         }
     }
 
@@ -868,7 +873,8 @@ class Resources implements iUseAuthentication, iProvideMultiVersionApi
     public function _post_index_json($responseData)
     {
         if ($this->restler->getProductionMode()) {
-            $this->restler->cache->set($this->cacheName, $responseData);
+			
+			$this->restler->cache->set($this->cacheName, $responseData);
         }
         return $responseData;
     }
