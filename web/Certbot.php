@@ -41,7 +41,7 @@ class Certbot{
 		include 'include/Settings.php';
 
 		if (file_exists($OSALEInstallDir . "/data/$node.conf")){
-			$content=file_get_contents($OSALEInstallDir . "/data/$node");
+			$content=file_get_contents($OSALEInstallDir . "/data/$node.conf");
 			$lines=explode("\n", $content);
 			$rc=new OSALEConfig();
 			$rc->node=$node;
@@ -95,14 +95,14 @@ class Certbot{
 		}
 		$bashDomains=$bashDomains . "\"";
 		file_put_contents($OSALEInstallDir . "/data/$node.conf", "#!/bin/bash\nLE_MAIL=$contact\nLE_CERT_DOMAIN=$bashDomains\n");
-		chmod($OSALEInstallDir . "/data/$node", 0766);
+		chmod($OSALEInstallDir . "/data/$node.conf", 0766);
 		$rc=new OSALEConfig();
 		$rc->node=$node;
 		$rc->contact=$contact;
 		$rc->domains=$domains;
 		exec("sudo -H " . $OSALEInstallDir . "/bin/generateCerts.sh " . $node, $out, $execRc);
 		if ($execRc != 0 ){
-			unlink($OSALEInstallDir . "/data/$node");
+			unlink($OSALEInstallDir . "/data/$node.conf");
 			$leErr="";
 			$dump=False;
 			foreach($out as $line){
@@ -146,7 +146,7 @@ class Certbot{
 			}
 			$rc->lastEventComment= $leErr;
 		}
-		unlink($OSALEInstallDir . "/data/$node");
+		unlink($OSALEInstallDir . "/data/$node.conf");
 		return $rc;
 	}
 }
