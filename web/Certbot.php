@@ -32,7 +32,7 @@ class Certbot{
 	 * 
 	 * @url GET
 	 * 
-	 * @return array {@type OSAConfig} config
+	 * @return array {@type OSALEConfig} config
 	 */
 	 function get(){
 		 
