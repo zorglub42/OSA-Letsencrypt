@@ -25,6 +25,33 @@ require_once 'include/DataModel.php';
 
 class Certbot{
 
+	/**
+	 * Get all conf
+	 * 
+	 * Get all existings configs
+	 * 
+	 * @url GET
+	 * 
+	 * @return array {@type OSAConfig} config
+	 */
+	 function get(){
+		 
+		include 'include/Settings.php';
+		$rc=array();
+		foreach (scandir($OSALEInstallDir . "/data/") as $file){
+			if (preg_match("/.*\.conf/", $file)){
+				try{
+					$conf=$this->getConf($withoutExt = preg_replace('/\\.[^.\\s]{3,4}$/', '', $file));
+					array_push($rc, $conf);
+				}catch (Exception $e){
+				}
+			}
+		}
+		if (count($rc)==0){
+			throw new RestException(404, "Can't find any configuration");
+		}
+		return $rc;
+	}
 
    	/**
    	 * Get config

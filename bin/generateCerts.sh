@@ -173,7 +173,7 @@ function isRenewRequired(){
 			if [ "$RENEW_FROM" \> "$CERT_ISSUE_DATE" ] ; then
 				echo "Renew is required"
 			else
-				echo "Renew IS NOT required"
+				echo "Renew is not required"
 				exit 0
 			fi
 		fi
