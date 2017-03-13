@@ -171,7 +171,6 @@ class Certbot{
 					$leErr=$leErr . $line . "\n";
 				}
 			}
-			$rc->lastEventComment= $leErr;
 		}
 		unlink($OSALEInstallDir . "/data/$node.conf");
 		return $rc;
