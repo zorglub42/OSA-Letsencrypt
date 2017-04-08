@@ -171,9 +171,9 @@ function isRenewRequired(){
 
 			echo "RENEW LIMIT=$RENEW_LIMIT RENEW_FROM=$RENEW_FROM ISSUE=$CERT_ISSUE_DATE" 
 			if [ "$RENEW_FROM" \> "$CERT_ISSUE_DATE" ] ; then
-				echo "Renew is required"
+				echo "Renewal is required"
 			else
-				echo "Renew is not required"
+				echo "Renewal is not required"
 				exit 0
 			fi
 		fi
