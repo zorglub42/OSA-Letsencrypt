@@ -27,7 +27,7 @@ use Luracast\Restler\Restler;
 Resources::$useFormatAsExtension = false;
 
 //CORS Compliancy
-header("Access-Control-Allow-Credentials : true");
+header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Headers: X-Requested-With, Depth, Authorization");
 header("Access-Control-Allow-Methods: OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT, LOCK, UNLOCK");
 header("Access-Control-Allow-Origin: *");
