@@ -76,7 +76,7 @@ function enableDisableNode(){
 # Uses $DOMAINS global as lsit of domains to check
 ##---------------------------------------------------------
 function getConflictingNodes(){
-	
+
 	[ -f listening-ok ] && rm listening-ok
  	curl -s -k --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"  "$OSA_LOCAL_SERVER/ApplianceManager/nodes/?order=nodeName&nodeNameFilter=&nodeDescriptionFilter=&localIPFilter=&portFilter=80&serverFQDNFilter="|sed 's/\\n/\n/g'|(
 		NODE_NAME="";
@@ -110,16 +110,18 @@ function getConflictingNodes(){
 					fi
 				done
 			fi
-			
-			
+
+
 			echo $l | grep "isPublished">/dev/null
 			if [ $? -eq 0 ] ; then
 				PUBLISHED=`echo $l| awk -F ":" '{print $2}'|awk -F ',' '{print $1}'|sed 's/"//g'`
 			fi
 			echo $l | grep "}" >/dev/null
 			if [ $? -eq 0 ] ; then
-				if [ $PUBLISHED -eq 1 -a $MATCH -eq 1 ] ; then
-					echo $NODE_NAME
+				if [ $PUBLISHED -eq 1 ] ;
+					if [ $MATCH -eq 1 ] ; then
+						echo $NODE_NAME
+					fi
 					if  [[ $IP == '*' ]] ; then
 						touch 'listening-ok'
 					fi
@@ -142,7 +144,7 @@ function setCertISOIssueDate(){
 
 
 	grep -v "LE_CERT_ISSUING" ../data/$1.conf > $$.tmp
-	
+
 	echo 'LE_CERT_ISSUING="'$CERT_ISSUE_DATE'"'>> $$.tmp
 	:> ../data/$1.conf
 	cat $$.tmp>> ../data/$1.conf
@@ -157,10 +159,10 @@ function setCertISOIssueDate(){
 ##---------------------------------------------------------
 function isRenewRequired(){
 	if [ $LE_ACTION == "renew" ] ; then
-	
+
 		echo "$CERTBOT_OPTS" | grep "\-\-force-renewal"
 		if [ $? -ne 0 ] ; then
-		
+
 			CERT=`grep "cert" /etc/letsencrypt/renewal/$NODE_FQDN.conf |awk -F "= " '{print $2}'`
 
 			CERT_ISSUE_DATE=`openssl x509 -in $CERT -text -noout| grep "Not After" |awk -F "After : "  '{print $2}'`
@@ -169,7 +171,7 @@ function isRenewRequired(){
 
 			RENEW_FROM=`date --date "$RENEW_LIMIT days" '+%Y%m%d'`
 
-			echo "RENEW LIMIT=$RENEW_LIMIT RENEW_FROM=$RENEW_FROM ISSUE=$CERT_ISSUE_DATE" 
+			echo "RENEW LIMIT=$RENEW_LIMIT RENEW_FROM=$RENEW_FROM ISSUE=$CERT_ISSUE_DATE"
 			if [ "$RENEW_FROM" \> "$CERT_ISSUE_DATE" ] ; then
 				echo "Renewal is required"
 			else
@@ -183,7 +185,7 @@ function isRenewRequired(){
 # Main prog
 #----------------------------------------------------------
 # $1: nodeName
-# $2: Optional 
+# $2: Optional
 #		renew: certificates renewal
 ##---------------------------------------------------------
 cd `dirname $0`
@@ -219,7 +221,7 @@ cd `dirname $0`
 
 	#Register (if needed )to letsenscrypt
 	#checkRestring
-	
+
 	#Get FQDN dor required node
 	echo curl -s -k --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"  $OSA_LOCAL_SERVER/ApplianceManager/nodes/$1
 	NODE_FQDN=`curl -s -k --user "$OSA_USAGE_USER:$OSA_ADMIN_PWD"  $OSA_LOCAL_SERVER/ApplianceManager/nodes/$1| grep serverFQDN| awk -F ":" '{print $2}'|awk -F '"' '{print $2}'`
@@ -228,7 +230,7 @@ cd `dirname $0`
 		exit 1
 	fi
 	isRenewRequired
-	
+
 	#Raw domain list for validation
 	DOMAINS=""
 	for p in $LE_CERT_DOMAIN ; do
@@ -260,8 +262,8 @@ EOF
 			echo "	ServerAlias $d">>$APACHE_SITES_ENABLED_DIR/le-domain-validation.conf
 		fi
 	done
-	
-	cat >> $APACHE_SITES_ENABLED_DIR/le-domain-validation.conf <<EOF	
+
+	cat >> $APACHE_SITES_ENABLED_DIR/le-domain-validation.conf <<EOF
 
         ServerAdmin webmaster@localhost
         DocumentRoot /var/www/le-domain-validation
@@ -276,9 +278,9 @@ EOF
 	$APACHE_INITD_FILE reload
 
 	SUCCESS=0
-	
+
 	if [ "$LE_ACTION" == "create" ] ; then
-		./certbot-auto certonly $CERTBOT_OPTS -n --expand --webroot -w /var/www/le-domain-validation $LE_CERT_DOMAIN --agree-tos  --email $LE_MAIL 2>&1 |tee -a $$.log 
+		./certbot-auto certonly $CERTBOT_OPTS -n --expand --webroot -w /var/www/le-domain-validation $LE_CERT_DOMAIN --agree-tos  --email $LE_MAIL 2>&1 |tee -a $$.log
 	elif [ "$LE_ACTION" == "renew" ] ; then
 		./certbot-auto renew $CERTBOT_OPTS -n --cert-name $ROOT_DOMAIN 2>&1 |tee -a $$.log
 	else
@@ -308,8 +310,8 @@ EOF
 	rm -rf  /var/www/le-domain-validation
 	[ -f listening-ok ] && rm listening-ok
 
-	
-	
+
+
 
 
 	#restart stoped node for letsencrypt domain validation
@@ -329,7 +331,7 @@ EOF
 			RC=0
 		;;
 		2)
-		
+
 			echo "Some new certs have been generated. Uploading them to OSA and updating node conf"
 			echo $PEM_DIR
 			uploadCerts $1 $PEM_DIR
@@ -341,5 +343,5 @@ EOF
 	esac
 	rm $$.log
 	exit $RC
-) 2>&1|tee -a $OSA_LOG_DIR/OSA-Letsencrypt.log 
+) 2>&1|tee -a $OSA_LOG_DIR/OSA-Letsencrypt.log
 exit ${PIPESTATUS[0]}
