@@ -120,9 +120,14 @@ function getConflictingNodes(){
 			if [ $? -eq 0 ] ; then
 				if [ $PUBLISHED -eq 1 ] ;
 					if [ $MATCH -eq 1 ] ; then
+						# Current node is published and it's FQDN match FQDN to validate
+						# Return this node as conflicting node
 						echo $NODE_NAME
 					fi
+					
 					if  [[ $IP == '*' ]] ; then
+						# Current node is published and is listenning on '*', what ever is FQDN is
+						# define "Listening maker"
 						touch 'listening-ok'
 					fi
 				fi
