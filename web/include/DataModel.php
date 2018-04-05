@@ -1,4 +1,15 @@
 <?php
+/**
+ * OSA-Letsencrypt
+ * 
+ * PHP Version 7.0
+ * 
+ * @category OSA-Addon
+ * @package  OSA-Letsencrypt
+ * @author   Zorglub42 <contact@zorglub42.fr>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+*/
 /*--------------------------------------------------------
  # Module Name : OSA-Letsencrypt
  # Version : 1.0.0
@@ -20,26 +31,42 @@
  # History     :
  # 1.0.0 - 2017-03-01 : Release of the file
 */
-class OSALEConfig{
-	
-	/**
-	 * @var string 
-	 * Node name {@required true}
-	 */
-	 public  $node;
-	/**
-	 * @var email 
-	 * Contact email for letsencrypt {@required true}
-	 */
-	 public  $contact;
-	/**
-	 * @var array of string 
-	 * List of domains {@required true}
-	 */
-	 public  $domains;
-	 /**
-	  * @var string
-	  * Issuing date is in ISO 8601 full format
-	  */
-	 public $issuing;
+/**
+ * Plugin config
+ * 
+ * PHP Version 7.0
+ * 
+ * @category OSA-Addon
+ * @package  OSA-Letsencrypt
+ * @author   Zorglub42 <contact@zorglub42.fr>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+*/
+class OSALEConfig
+{
+    
+    /**
+     * Node name {@required true}
+     * 
+     * @var string 
+    */
+    public  $node;
+    /**
+     * Contact email for letsencrypt {@required true}
+     * 
+     * @var email 
+     */
+    public  $contact;
+    /**
+     * List of domains {@required true}
+     * 
+     * @var array of string 
+     */
+    public  $domains;
+    /**
+      * Issuing date is in ISO 8601 full format
+      
+      * @var string
+      */
+    public $issuing;
 }

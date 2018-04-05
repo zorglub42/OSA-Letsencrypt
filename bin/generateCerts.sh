@@ -176,7 +176,7 @@ function isRenewRequired(){
 
 			RENEW_FROM=`date --date "$RENEW_LIMIT days" '+%Y%m%d'`
 
-			echo "RENEW LIMIT=$RENEW_LIMIT RENEW_FROM=$RENEW_FROM ISSUE=$CERT_ISSUE_DATE"
+			echo "RENEW LIMIT=$RENEW_LIMIT RENEW_COMPARAISON=$RENEW_FROM ISSUE=$CERT_ISSUE_DATE"
 			if [ "$RENEW_FROM" \> "$CERT_ISSUE_DATE" ] ; then
 				echo "Renewal is required"
 			else

@@ -1,4 +1,16 @@
 <?php 
+/**
+ * OSA-Letsencrypt
+ * 
+ * PHP Version 7.0
+ * 
+ * @category OSA-Addon
+ * @package  OSA-Letsencrypt
+ * @author   Zorglub42 <contact@zorglub42.fr>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0.htm Apache 2 license
+ * @link     https://github.com/zorglub42/OSA/
+*/
+
 /*--------------------------------------------------------
  # Module Name : OSA-Letsencrypt
  # Version : 1.0.0
@@ -29,17 +41,21 @@ Resources::$useFormatAsExtension = false;
 //CORS Compliancy
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Headers: X-Requested-With, Depth, Authorization");
-header("Access-Control-Allow-Methods: OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT, LOCK, UNLOCK");
+header(
+    "Access-Control-Allow-Methods: " .
+    "OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, ".
+    "REPORT, LOCK, UNLOCK"
+);
 header("Access-Control-Allow-Origin: *");
 
 
 $r = new Restler();
-if (isset(getallheaders()["Public-Root-URI"])){
-	$r->setBaseUrl(getallheaders()["Public-Root-URI"] . "/addons/letsencrypt");
+if (isset(getallheaders()["Public-Root-URI"])) {
+    $r->setBaseUrl(getallheaders()["Public-Root-URI"] . "/addons/letsencrypt");
 }
 
-$r->setSupportedFormats('JsonFormat' ,'UrlEncodedFormat');
-$r->addAPIClass('Luracast\\Restler\\Resources');  //this creates resources.json at API root 
+$r->setSupportedFormats('JsonFormat', 'UrlEncodedFormat');
+$r->addAPIClass('Luracast\\Restler\\Resources');  
 
 $r->addAPIClass('Certbot');
 $r->handle();
