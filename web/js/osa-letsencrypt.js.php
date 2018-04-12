@@ -189,5 +189,5 @@ function createLEConf(){
 addonAddGUIHook("#tabs-SSL", addLEButton);
 
 //Add OSA-Letsencrypt API doucmentation menu item
-addonAddDocURI("letsencrypt", "doc");
+addonAddDocURI("letsencrypt", "doc/");
 
