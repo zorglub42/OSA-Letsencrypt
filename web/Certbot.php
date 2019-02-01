@@ -143,7 +143,7 @@ class Certbot
      * @param string $node    node name for which configuration is requested 
      *                        {@required true}
      * @param email  $contact contact email for letsencrypt {@required true}
-     * @param array  $domains {@type string) of string  $domains domains to validate
+     * @param array  $domains {@type string} of string  $domains domains to validate
      *                        and include in server certificate {@required true}
      *
      * @url POST /:node

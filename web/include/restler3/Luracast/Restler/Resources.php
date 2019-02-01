@@ -772,7 +772,7 @@ class Resources implements iUseAuthentication, iProvideMultiVersionApi
                     CommentParser::$embeddedDataName,
                     'type'
                 ) ? :
-                    (count($value)
+                    (@count($value)
                         ? $this->getType(end($value), true)
                         : 'string');
                 if (class_exists($itemType)) {
