@@ -30,7 +30,7 @@ OSA_LOCAL_PWD=""
 OSA_LOG_DIR=/var/log/OSA
 
 
-#certbot-auto tweakin
+#certbot tweaking
 #
 #	See https://certbot.eff.org/docs/using.html for allowed tags
 #		usefully for testing and debug

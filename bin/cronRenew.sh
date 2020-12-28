@@ -27,7 +27,7 @@ cd `dirname $0`
 (
 	echo "*********** $0 IS STARTING *****************************************************************************************"
 	# Call certbot to ensure that new version will install with cron rather than calling synchronous WS
-	./certbot-auto certificates
+	certbot certificates
 
 	for conf in `ls ../data/*.conf` ; do
 		n=`basename $conf |sed 's/\.conf//'`

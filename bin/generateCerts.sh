@@ -124,8 +124,7 @@ function getConflictingNodes(){
 						# Return this node as conflicting node
 						echo $NODE_NAME
 					fi
-
-					if  [[ $IP == '*' ]] ; then
+					if  [ "$IP" == '*' ] ; then
 						# Current node is published and is listenning on '*', what ever is FQDN is
 						# define "Listening maker"
 						touch 'listening-ok'
@@ -250,6 +249,7 @@ cd `dirname $0`
 	CONFLICTING_NODES=`getConflictingNodes`
 	#Stop those node while letsencrypt try domain validation
 	for node in $CONFLICTING_NODES ; do
+		echo disabling $node
 		enableDisableNode $node 0
 	done
 
@@ -285,9 +285,9 @@ EOF
 	SUCCESS=0
 
 	if [ "$LE_ACTION" == "create" ] ; then
-		./certbot-auto certonly $CERTBOT_OPTS -n --expand --webroot -w /var/www/le-domain-validation $LE_CERT_DOMAIN --agree-tos  --email $LE_MAIL 2>&1 |tee -a $$.log
+		certbot certonly $CERTBOT_OPTS -n --expand --webroot -w /var/www/le-domain-validation $LE_CERT_DOMAIN --agree-tos  --email $LE_MAIL 2>&1 |tee -a $$.log
 	elif [ "$LE_ACTION" == "renew" ] ; then
-		./certbot-auto renew $CERTBOT_OPTS -n --cert-name $ROOT_DOMAIN 2>&1 |tee -a $$.log
+		certbot renew $CERTBOT_OPTS -n --cert-name $ROOT_DOMAIN 2>&1 |tee -a $$.log
 	else
 		false
 	fi
@@ -306,9 +306,9 @@ EOF
 		fi
 	else
 		SUCCESS=0
-		echo "******************* SOMETHING GONE WRONG WITH LETSENCRYPT ************************"
+		echo "******************* SOMETHING WENT WRONG WITH LETSENCRYPT ************************"
 		cat $$.log
-		echo "******************* SOMETHING GONE WRONG WITH LETSENCRYPT ************************"
+		echo "******************* SOMETHING WENT WRONG WITH LETSENCRYPT ************************"
 	fi
 
 	rm $APACHE_SITES_ENABLED_DIR/le-domain-validation.conf
@@ -323,15 +323,19 @@ EOF
 	for node in $CONFLICTING_NODES ; do
 		enableDisableNode $node 1
 	done
-	$APACHE_INITD_FILE reload
-
+	$APACHE_INITD_FILE status > /dev/null
+	if [ $? -eq 0 ] ; then
+		$APACHE_INITD_FILE reload
+	else
+		$APACHE_INITD_FILE restart
+	fi
 	case $SUCCESS in
 		0)
-			echo "Something goes wrong with letsencrypt certbot-auto"
+			echo "Something goes wrong with letsencrypt certbot"
 			RC=1
 		;;
 		1)
-			echo "certbot-auto was OK but no certs generetated (renewal not required OR certs not re-generated)"
+			echo "certbot was OK but no certs generetated (renewal not required OR certs not re-generated)"
 			setCertISOIssueDate $1
 			RC=0
 		;;

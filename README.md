@@ -27,6 +27,10 @@ Install scripts are developped for debian, but, with few changes, should be comp
 
 Installation process:
   - connect as root
+  - install certbot:
+	```
+	apt install certbot
+	```
   - goto to wished install dir (Ex.) 
 
 		Ex:

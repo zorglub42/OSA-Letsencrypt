@@ -69,8 +69,8 @@ cd `dirname $0`
 	
 	SUCCESS=0
 	if [ -f /etc/letsencrypt/live/$ROOT_DOMAIN/fullchain.pem ] ; then
-		./certbot-auto revoke $CERTBOT_OPTS --cert-path /etc/letsencrypt/live/$ROOT_DOMAIN/fullchain.pem  --agree-tos --email $LE_MAIL  -n   2>&1 |tee -a $$.log 
-		./certbot-auto delete $CERTBOT_OPTS --cert-name $ROOT_DOMAIN  --agree-tos --email $LE_MAIL  -n   2>&1 |tee -a $$.log 
+		certbot revoke $CERTBOT_OPTS --cert-path /etc/letsencrypt/live/$ROOT_DOMAIN/fullchain.pem  --agree-tos --email $LE_MAIL  -n   2>&1 |tee -a $$.log 
+		#certbot delete $CERTBOT_OPTS --cert-name $ROOT_DOMAIN  --agree-tos --email $LE_MAIL  -n   2>&1 |tee -a $$.log 
 	else
 		echo "Can't find any certificates for $1"  
 		exit 1

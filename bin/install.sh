@@ -97,9 +97,12 @@ ln -s $INSTALL_DIR/web $OSA_INSTALL_DIR/ApplianceManager.php/addons/letsencrypt
 chmod 777 $INSTALL_DIR/data
 
 #Install certbot-auto and prepare it tu run
-cd $INSTALL_DIR/bin
-curl -s  https://dl.eff.org/certbot-auto -o certbot-auto
-chmod u+x certbot-auto
-sudo -H ./certbot-auto -n --os-packages-only
-sudo -H ./certbot-auto certificates
+#cd $INSTALL_DIR/bin
+#curl -s  https://dl.eff.org/certbot-auto -o certbot-auto
+#chmod u+x certbot-auto
+#sudo -H ./certbot-auto -n --os-packages-only
+#sudo -H ./certbot-auto certificates
+sudo -H certbot -n --os-packages-only
+sudo -H certbot certificates
+
 
