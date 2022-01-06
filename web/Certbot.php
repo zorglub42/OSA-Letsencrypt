@@ -110,7 +110,7 @@ class Certbot
                     $rc->domains=explode(
                         "  ",
                         str_replace(
-                            "-d",
+                            "-d ",
                             "", 
                             str_replace("\"", "", $lineData[1])
                         )
