@@ -85,7 +85,7 @@ cat >/etc/sudoers.d/OSA-Letsencrypt <<EOF
 Defaults:www-data    !requiretty
 Cmnd_Alias      OSA_LE_GEN_CERTS_CMD=$INSTALL_DIR/bin/generateCerts.sh
 Cmnd_Alias      OSA_LE_REVOKE_CERTS_CMD=$INSTALL_DIR/bin/revokeCerts.sh
-User_Alias      OSA_LE_USERS=www-data  OSA_LE_USERS       ALL = NOPASSWD: OSA_LE_GEN_CERTS_CMD, OSA_LE_REVOKE_CERTS_CMD
+www-data   ALL = NOPASSWD: OSA_LE_GEN_CERTS_CMD, OSA_LE_REVOKE_CERTS_CMD
 #OSA-Letsencrypt addon
 EOF
 
